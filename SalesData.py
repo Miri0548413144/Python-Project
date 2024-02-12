@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import seaborn as sns
 
 class SalesData:
@@ -11,20 +10,20 @@ class SalesData:
         self.dataset.dropna(inplace=True)
 
     def calculate_total_sales(self):
-        total_sales = self.dataset.groupby('product')['sales'].sum()
+        total_sales = self.dataset.groupby('Product')['Quantity'].sum()
         return total_sales
 
     def _calculate_total_sales_per_month(self):
-        self.dataset['month'] = self.dataset['date'].dt.month
-        total_sales_per_month = self.dataset.groupby('month')['sales'].sum()
+        self.dataset['month'] = self.dataset['Date'].dt.month
+        total_sales_per_month = self.dataset.groupby('month')['Quantity'].sum()
         return total_sales_per_month
 
     def _identify_best_selling_product(self):
-        best_selling_product = self.dataset.groupby('product')['sales'].sum().idxmax()
+        best_selling_product = self.dataset.groupby('Product')['Quantity'].sum().idxmax()
         return best_selling_product
 
     def _identify_month_with_highest_sales(self):
-        month_with_highest_sales = self.dataset.groupby('month')['sales'].sum().idxmax()
+        month_with_highest_sales = self.dataset.groupby('month')['Quantity'].sum().idxmax()
         return month_with_highest_sales
 
     def analyze_sales_data(self):
@@ -37,21 +36,21 @@ class SalesData:
         return analysis_result
 
     def add_additional_values(self, analysis_result):
-        min_sales_product = self.dataset.groupby('product')['sales'].sum().idxmin()
-        average_sales = self.dataset['sales'].mean()
+        min_sales_product = self.dataset.groupby('Product')['Quantity'].sum().idxmin()
+        average_sales = self.dataset['Quantity'].mean()
         analysis_result['min_sales_product'] = min_sales_product
         analysis_result['average_sales'] = average_sales
         return analysis_result
 
 
     def calculate_cumulative_sales(self):
-        self.dataset['cumulative_sales'] = self.dataset.groupby('product')['sales'].cumsum()
+        self.dataset['cumulative_sales'] = self.dataset.groupby('Product')['Quantity'].cumsum()
 
     def add_90_percent_values_column(self):
-        self.dataset['90_percent_values'] = self.dataset['discount'].apply(lambda x: x * 0.9)
+        self.dataset['90_percent_values'] = self.dataset['Price'].apply(lambda x: x * 0.9)
 
     def bar_chart_category_sum(self):
-        sns.barplot(x='product', y='quantity', data=self.dataset.groupby('product')['quantity'].sum().reset_index())
+        sns.barplot(x='Product', y='Quantity', data=self.dataset.groupby('Product')['Quantity'].sum().reset_index())
 
     def calculate_mean_quantity(self):
         mean = np.mean(self.dataset['Total'])
@@ -61,8 +60,8 @@ class SalesData:
         return mean, median, second_max
 
     def filter_by_sellings_or_and(self):
-        filtered_data = self.dataset[(self.dataset['selling'] > 5) | (self.dataset['selling'] == 0)]
-        filtered_data = filtered_data[(filtered_data['price'] > 300) & (filtered_data['selling'] < 2)]
+        filtered_data = self.dataset[(self.dataset['Selling'] > 5) | (self.dataset['Selling'] == 0)]
+        filtered_data = filtered_data[(filtered_data['Price'] > 300) & (filtered_data['Selling'] < 2)]
 
         return filtered_data
 
@@ -83,3 +82,18 @@ class SalesData:
             }
 
         return stats
+
+    def print_table_head(self):
+        print(self.dataset.head())
+
+    def print_table_tail(self, n):
+        print(self.dataset.tail(n))
+
+    def print_random_row(self):
+        random_row = self.dataset.sample()
+        print(random_row)
+
+    def get_numeric_values(self):
+        numeric_values = self.dataset.select_dtypes(include='number')
+        return numeric_values.values
+
